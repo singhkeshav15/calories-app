@@ -1,30 +1,70 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Dashboard from './components/Dashboard';
 import AddFoodForm from './components/AddFoodForm';
 import FoodList from './components/FoodList';
 import './App.css'
 
+const API_URL = "http://localhost:5000/api/foods"
+
 function App() {
-  const [foods, setFoods] = useState([
-    { id: 1, name: "Eggs", calories: 70 },
-    { id: 2, name: "Apple", calories: 95 },
-    { id: 3, name: "Banana", calories: 105 },
-    { id: 4, name: "Chicken Breast", calories: 165 },
-    { id: 5, name: "Rice", calories: 206 },
-    { id: 6, name: "Broccoli", calories: 55 },
-    { id: 7, name: "Salmon", calories: 208 },
-    { id: 8, name: "Almonds", calories: 164 },
-    { id: 9, name: "Oatmeal", calories: 150 },
-    { id: 10, name: "Yogurt", calories: 100 },
-  ]);
+  const [foods, setFoods] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  const addFood = (newFood) => {
-    setFoods((prevFoods) => [...prevFoods, newFood]);
-  };
+  // Runs once when app loads — fetches all logged foods from server
+  useEffect(() => {
+    const fetchFoods = async () => {
+      try {
+        setLoading(true)
+        const response = await fetch(API_URL)
+        const data = await response.json()
+        setFoods(data)
+      } catch (err) {
+        setError("Could not load foods. Is the server running?")
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchFoods()
+  }, [])
 
-  const deleteFood = (id) => {
-    setFoods(foods.filter((food) => food.id !== id));
-  };
+  // Sends POST to server, then adds the returned food to state
+  const addFood = async (newFood) => {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newFood)
+    })
+    const data = await response.json()
+    setFoods((prevFoods) => [...prevFoods, data.data])
+  }
+
+  // Sends DELETE to server, then removes from state
+  const deleteFood = async (id) => {
+    await fetch(`${API_URL}/${id}`, {
+      method: "DELETE"
+    })
+    setFoods(foods.filter((food) => food.id !== id))
+  }
+
+
+  if (loading) return (
+    <div className="app">
+      <div className="status-screen">
+        <div className="spinner" />
+        <p>Loading your foods...</p>
+      </div>
+    </div>
+  )
+
+  if (error) return (
+    <div className="app">
+      <div className="status-screen error">
+        <span>⚠️</span>
+        <p>{error}</p>
+      </div>
+    </div>
+  )
 
   return (
     <div className="app">

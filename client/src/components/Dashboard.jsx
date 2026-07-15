@@ -1,11 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 const Dashboard = ({ foods }) => {
   const totalCal = foods.reduce((total, food) => total + food.calories, 0)
-  const targetCal = 2200
-  const remaining = targetCal - totalCal
-  const percentage = Math.min((totalCal / targetCal) * 100, 100)
+  const [goalcal, setGoalcal] = useState(2000)
+  const [goalInput, setGoalInput] = useState(2000)
+  const remaining = goalcal - totalCal
+  const percentage = Math.min((totalCal / goalcal) * 100, 100)
 
+  
   const getBarColor = () => {
     if (percentage >= 100) return 'var(--danger)'
     if (percentage >= 80) return '#fb923c'
@@ -24,7 +26,7 @@ const Dashboard = ({ foods }) => {
         </div>
         <div className="stat-card stat-card--goal">
           <span className="stat-label">Daily Goal</span>
-          <span className="stat-value goal">{targetCal}</span>
+          <span className="stat-value goal" >{goalcal}</span>
           <span className="stat-unit">kcal</span>
         </div>
         <div className="stat-card">
@@ -58,6 +60,22 @@ const Dashboard = ({ foods }) => {
           <p className="over-limit-msg">⚠️ You've exceeded your daily goal by {Math.abs(remaining)} kcal</p>
         )}
       </div>
+      <div className="goal-setter">
+        <input
+          type="number"
+          value={goalInput}
+          onChange={(e) => setGoalInput(e.target.value)}
+          className="goal-input"
+          placeholder="Set your goal"
+        />
+        <button
+          className="goal-btn"
+          onClick={() => setGoalcal(Number(goalInput))}
+        >
+          Set Goal
+        </button>
+      </div>
+      
     </div>
   )
 }

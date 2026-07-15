@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useActionState, useState } from "react";
 
 function AddFoodForm({ addFood }) {
   const [name, setName] = useState("");
@@ -19,7 +19,6 @@ function AddFoodForm({ addFood }) {
 
     setError("");
     addFood({
-      id: Date.now(),
       name: name.trim(),
       calories: Number(calories),
     });
