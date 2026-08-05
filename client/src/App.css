@@ -576,6 +576,62 @@ body::after {
   to { transform: rotate(360deg); }
 }
 
+/* ─── Search Dropdown ───────────────────────────────── */
+.input-group {
+  position: relative;
+}
+
+.search-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  list-style: none;
+  background: #0f1320;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  z-index: 100;
+  max-height: 220px;
+  overflow-y: auto;
+  box-shadow: var(--shadow);
+  margin-top: 4px;
+}
+
+.search-dropdown::-webkit-scrollbar { width: 3px; }
+.search-dropdown::-webkit-scrollbar-thumb {
+  background: var(--glass-border);
+  border-radius: 999px;
+}
+
+.search-item {
+  padding: 0.7rem 1rem;
+  cursor: pointer;
+  border-bottom: 1px solid var(--glass-border);
+  transition: background 0.15s ease;
+}
+
+.search-item:last-child {
+  border-bottom: none;
+}
+
+.search-item:hover {
+  background: rgba(74, 222, 128, 0.06);
+}
+
+.search-item strong {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  display: block;
+  margin-bottom: 0.15rem;
+}
+
+.search-item small {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
 /* ─── Goal Setter ────────────────────────────────────── */
 .goal-setter {
   display: flex;

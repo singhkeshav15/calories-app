@@ -24,6 +24,7 @@ const FoodList = ({ foods, deleteFood }) => {
             <div className="food-info">
               <span className="food-name">{food.name}</span>
               <span className="food-calories">{food.calories} kcal</span>
+              <span className="food-protein">{food.protein}g</span>
             </div>
             <button
               className="delete-btn"

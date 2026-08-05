@@ -36,7 +36,7 @@ function App() {
       body: JSON.stringify(newFood)
     })
     const data = await response.json()
-    setFoods((prevFoods) => [...prevFoods, data.data])
+    setFoods((prevFoods) => [...prevFoods, data])
   }
 
   // Sends DELETE to server, then removes from state
