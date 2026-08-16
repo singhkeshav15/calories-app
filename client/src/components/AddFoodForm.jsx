@@ -18,7 +18,7 @@ function AddFoodForm({ addFood }) {
     setSearching(true)
     try{
       const response = await fetch(
-        `http://localhost:5000/api/search?q=${encodeURIComponent(searchText)}`
+        `${import.meta.env.VITE_API_URL}/api/search?q=${encodeURIComponent(searchText)}`
       )
       if(!response.ok){
         throw new Error(`HTTP error : ${response.status}`)

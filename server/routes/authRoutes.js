@@ -2,10 +2,17 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import pool from '../db/index.js'
 import express from 'express'
+import rateLimit from 'express-rate-limit'
 const router = express.Router()
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { message: "Too many attempts, try again later" }
+})
+
 // POST /api/auth/register
-router.post('/register', async (req, res) => {
+router.post('/register', limiter, async (req, res) => {
     const { email, password } = req.body
 
     if (!email || !password) {
@@ -37,7 +44,7 @@ router.post('/register', async (req, res) => {
 })
 
 // POST /api/auth/login
-router.post('/login', async (req, res) => {
+router.post('/login',limiter, async (req, res) => {
     const { email, password } = req.body
 
     try {

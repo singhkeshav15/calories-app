@@ -6,7 +6,7 @@ import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
 import './App.css'
 
-const API_URL = "http://localhost:5000/api/foods"
+const API_URL = `${import.meta.env.VITE_API_URL}/api/foods`
 
 function App() {
   const [foods, setFoods] = useState([])

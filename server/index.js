@@ -11,7 +11,10 @@ import authRouter from './routes/authRoutes.js'
 const port = process.env.PORT || 5000
 const app = express()
 
-app.use(cors())
+app.use(cors({
+  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  credentials: true
+}))
 app.use(express.json())
 app.use('/api', foodRouter)
 app.use('/api', searchRouter)
