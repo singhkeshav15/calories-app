@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 .env
 .env.production
+
+postgresql://neondb_owner:npg_ofiScud2UZ6r@ep-floral-breeze-az1sx4tl.c-3.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
