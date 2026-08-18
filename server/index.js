@@ -19,6 +19,7 @@ app.use(express.json())
 app.use('/api', foodRouter)
 app.use('/api', searchRouter)
 app.use('/api/auth', authRouter)
+app.get('/health', (req, res) => res.json({ status: 'ok' }))
 
 app.listen(port, ()=>{
     console.log(`Server is running on port ${port}`)
