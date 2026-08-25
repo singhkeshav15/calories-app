@@ -45,37 +45,35 @@ function AddFoodForm({ addFood }) {
   }, [query]);
 
   const handleSelectFood = (food) => {
-    const calories = parseInt(food.food_description.split('Calories: ')[1].split('kcal')[0])
-    const protein = parseFloat(food.food_description.split('Protein: ')[1].split('g')[0])
-    setName(food.food_name)       // auto-fills existing name state
-    setCalories(calories)  
-    setProtein(protein)       // auto-fills existing calories state
-    setResults([])                // close the dropdown
-    setQuery('')                  // clear search box
+    setName(food.food_name)
+    setCalories(food.calories)
+    setProtein(food.protein)
+    setResults([])
+    setQuery('')
   }
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     if (!name.trim() || !calories || !protein) {
-      setError("Please fill in all fields");
-      return;
+      setError("Please fill in all fields")
+      return
     }
     if (Number(calories) <= 0) {
-      setError("Calories must be greater than 0");
-      return;
+      setError("Calories must be greater than 0")
+      return
     }
 
-    setError("");
+    setError("")
     addFood({
       name: name.trim(),
       calories: Number(calories),
-      protein : Number(protein)
-    });
+      protein: Number(protein)
+    })
 
     setName("")
     setCalories("")
     setProtein("")
-  };
+  }
 
   return (
     <div className="form-card">
@@ -87,28 +85,26 @@ function AddFoodForm({ addFood }) {
           <input type="text" 
           placeholder="Search food here"
           value={query}
-          onChange={(e) =>{
+          onChange={(e)=>{
             const value = e.target.value
             setQuery(value)
-            //handleSearch(value) : debouncing
           }}
           className="food-input"
-          
           />
 
           {searching && <p>Searching...</p>}
 
           {results.length > 0 && (
             <ul className="search-dropdown">
-              {results.map((food) => (
+              {results.map((food, index) => (
                 <li
-                  key={food.food_id}
+                  key={index}
                   onClick={() => handleSelectFood(food)}
                   className="search-item"
                 >
                   <strong>{food.food_name}</strong>
                   <br />
-                  <small>{food.food_description}</small>
+                  <small>{food.description}</small>
                 </li>
               ))}
             </ul>
