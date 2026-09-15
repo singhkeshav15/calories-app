@@ -352,6 +352,23 @@ body::after {
 
 .food-input::placeholder { color: var(--text-muted); }
 
+/* Dark theme for select dropdowns */
+.food-input option {
+  background: #0f1320;
+  color: var(--text-primary);
+  padding: 0.5rem;
+}
+
+select.food-input {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.9rem center;
+  padding-right: 2.2rem;
+  cursor: pointer;
+}
+
 .food-input:focus {
   border-color: rgba(74, 222, 128, 0.5);
   background: rgba(74, 222, 128, 0.04);
@@ -849,4 +866,134 @@ body::after {
 .logout-btn:hover {
   border-color: #ef4444;
   color: #ef4444;
+}
+
+/* ─── Onboarding ─────────────────────────────────────── */
+.onboard-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.onboard-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 1.2rem;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  text-align: center;
+}
+
+.onboard-option:hover {
+  border-color: rgba(74, 222, 128, 0.4);
+  background: rgba(74, 222, 128, 0.05);
+  transform: translateY(-2px);
+}
+
+.onboard-option-icon { font-size: 1.8rem; }
+.onboard-option strong { font-size: 0.95rem; color: var(--text-primary); }
+.onboard-option small  { font-size: 0.78rem; color: var(--text-muted); }
+
+.onboard-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.recommendation-box {
+  background: rgba(74, 222, 128, 0.06);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+  border-radius: var(--radius-sm);
+  padding: 1.5rem;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.recommendation-number {
+  display: block;
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: -2px;
+  line-height: 1;
+}
+
+.recommendation-unit {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.recommendation-meta {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.75rem;
+  text-transform: capitalize;
+}
+
+.recommendation-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.back-btn {
+  width: 100%;
+  padding: 0.7rem;
+  background: transparent;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.back-btn:hover {
+  border-color: rgba(74, 222, 128, 0.3);
+  color: var(--text-primary);
+}
+
+/* ─── Header Actions ─────────────────────────────────── */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.edit-goal-btn {
+  background: transparent;
+  border: 1px solid rgba(74, 222, 128, 0.25);
+  color: var(--accent);
+  padding: 0.4rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.edit-goal-btn:hover {
+  background: rgba(74, 222, 128, 0.08);
+  border-color: var(--accent);
+}
+
+/* 4-column stats grid when protein is shown */
+.stats-grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 600px) {
+  .stats-grid    { grid-template-columns: repeat(2, 1fr); }
+  .onboard-row   { grid-template-columns: 1fr; }
 }

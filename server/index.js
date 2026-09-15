@@ -6,6 +6,7 @@ dotenv.config()
 import foodRouter from './routes/foodRoutes.js'
 import searchRouter from './routes/searchRoutes.js'
 import authRouter from './routes/authRoutes.js'
+import userRouter from './routes/userRoutes.js'
 
 
 const port = process.env.PORT || 5000
@@ -19,6 +20,7 @@ app.use(express.json())
 app.use('/api', foodRouter)
 app.use('/api', searchRouter)
 app.use('/api/auth', authRouter)
+app.use('/api/user', userRouter)
 app.get('/health', (req, res) => res.json({ status: 'ok' }))
 
 app.listen(port, ()=>{

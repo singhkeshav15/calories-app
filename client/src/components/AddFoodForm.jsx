@@ -9,7 +9,6 @@ function AddFoodForm({ addFood }) {
   const [results, setResults] = useState([])    // search results array
   const [searching, setSearching] = useState(false)  // loading state
 
- 
   const handleSearch = async (searchText) => {
     if (!searchText.trim()) {
       setResults([])

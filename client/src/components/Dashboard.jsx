@@ -1,18 +1,8 @@
-import React, { useState } from 'react'
-
-const Dashboard = ({ foods }) => {
+const Dashboard = ({ foods, dailyGoal }) => {
   const totalCal = foods.reduce((total, food) => total + food.calories, 0)
-  const [goalcal, setGoalcal] = useState(2000)
-  const [goalInput, setGoalInput] = useState(2000)
-  const remaining = goalcal - totalCal
-  const percentage = Math.min((totalCal / goalcal) * 100, 100)
-
-  
-  const getBarColor = () => {
-    if (percentage >= 100) return 'var(--danger)'
-    if (percentage >= 80) return '#fb923c'
-    return 'url(#barGradient)'
-  }
+  const totalProtein = foods.reduce((total, food) => total + (parseFloat(food.protein) || 0), 0)
+  const remaining = dailyGoal - totalCal
+  const percentage = Math.min((totalCal / dailyGoal) * 100, 100)
 
   return (
     <div className="dashboard">
@@ -26,7 +16,7 @@ const Dashboard = ({ foods }) => {
         </div>
         <div className="stat-card stat-card--goal">
           <span className="stat-label">Daily Goal</span>
-          <span className="stat-value goal" >{goalcal}</span>
+          <span className="stat-value goal">{dailyGoal?.toLocaleString()}</span>
           <span className="stat-unit">kcal</span>
         </div>
         <div className="stat-card">
@@ -35,6 +25,11 @@ const Dashboard = ({ foods }) => {
             {remaining < 0 ? `+${Math.abs(remaining)}` : remaining}
           </span>
           <span className="stat-unit">kcal</span>
+        </div>
+        <div className="stat-card">
+          <span className="stat-label">Protein</span>
+          <span className="stat-value">{totalProtein.toFixed(1)}</span>
+          <span className="stat-unit">g</span>
         </div>
       </div>
 
@@ -60,22 +55,6 @@ const Dashboard = ({ foods }) => {
           <p className="over-limit-msg">⚠️ You've exceeded your daily goal by {Math.abs(remaining)} kcal</p>
         )}
       </div>
-      <div className="goal-setter">
-        <input
-          type="number"
-          value={goalInput}
-          onChange={(e) => setGoalInput(e.target.value)}
-          className="goal-input"
-          placeholder="Set your goal"
-        />
-        <button
-          className="goal-btn"
-          onClick={() => setGoalcal(Number(goalInput))}
-        >
-          Set Goal
-        </button>
-      </div>
-      
     </div>
   )
 }
