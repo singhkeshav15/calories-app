@@ -7,6 +7,7 @@ import foodRouter from './routes/foodRoutes.js'
 import searchRouter from './routes/searchRoutes.js'
 import authRouter from './routes/authRoutes.js'
 import userRouter from './routes/userRoutes.js'
+import aiRouter from './routes/aiRoutes.js'
 
 
 const port = process.env.PORT || 5000
@@ -21,6 +22,7 @@ app.use('/api', foodRouter)
 app.use('/api', searchRouter)
 app.use('/api/auth', authRouter)
 app.use('/api/user', userRouter)
+app.use('/api/ai', aiRouter)
 app.get('/health', (req, res) => res.json({ status: 'ok' }))
 
 app.listen(port, ()=>{

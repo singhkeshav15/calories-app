@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Dashboard from './components/Dashboard'
 import AddFoodForm from './components/AddFoodForm'
 import FoodList from './components/FoodList'
+import AiEstimator from './components/AiEstimator'
 import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
 import Onboarding from './pages/Onboarding.jsx'
@@ -144,6 +145,8 @@ function App() {
       </header>
 
       <Dashboard foods={foods} dailyGoal={dailyGoal} />
+
+      <AiEstimator token={token} addFood={addFood} />
 
       <div className="bottom-section">
         <AddFoodForm addFood={addFood} />

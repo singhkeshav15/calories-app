@@ -997,3 +997,136 @@ select.food-input {
   .stats-grid    { grid-template-columns: repeat(2, 1fr); }
   .onboard-row   { grid-template-columns: 1fr; }
 }
+
+/* ─── AI Estimator ───────────────────────────────────── */
+.ai-card {
+  margin-bottom: 1.5rem;
+  border-color: rgba(139, 92, 246, 0.2);
+  background: rgba(139, 92, 246, 0.03);
+}
+
+.ai-badge {
+  background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  letter-spacing: 0.05em;
+}
+
+.ai-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.ai-textarea {
+  resize: none;
+  line-height: 1.6;
+  font-family: inherit;
+}
+
+.char-count {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-align: right;
+  display: block;
+  margin-top: 0.3rem;
+}
+
+.ai-loading { letter-spacing: 0.02em; }
+
+/* Result box */
+.ai-result {
+  margin-top: 1.2rem;
+  border-top: 1px solid var(--glass-border);
+  padding-top: 1.2rem;
+  animation: fadeSlideUp 0.3s ease;
+}
+
+.ai-result-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 1rem;
+}
+
+.ai-stat {
+  text-align: center;
+}
+
+.ai-stat-value {
+  display: block;
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #a78bfa;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+
+.ai-stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ai-divider {
+  width: 1px;
+  height: 40px;
+  background: var(--glass-border);
+}
+
+/* Breakdown list */
+.ai-breakdown {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.ai-breakdown-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.ai-breakdown-item:last-child { border-bottom: none; }
+
+.ai-breakdown-cal {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+.ai-note {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+  font-style: italic;
+}
+
+.ai-disclaimer {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  opacity: 0.7;
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+
+.ai-added {
+  text-align: center;
+  color: var(--accent);
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 0.6rem;
+}
