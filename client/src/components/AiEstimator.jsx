@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 
 function AiEstimator({ token, addFood }) {
   const [description, setDescription] = useState('')
@@ -6,6 +6,9 @@ function AiEstimator({ token, addFood }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [added, setAdded] = useState(false)
+
+  // AbortController ref — lets us cancel the in-flight request
+  const abortRef = useRef(null)
 
   const handleEstimate = async (e) => {
     e.preventDefault()
@@ -16,6 +19,9 @@ function AiEstimator({ token, addFood }) {
     setResult(null)
     setAdded(false)
 
+    // Create a new AbortController for this request
+    abortRef.current = new AbortController()
+
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/ai/estimate`, {
         method: 'POST',
@@ -23,21 +29,33 @@ function AiEstimator({ token, addFood }) {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ description })
+        body: JSON.stringify({ description }),
+        signal: abortRef.current.signal   // attach cancel signal
       })
       const data = await res.json()
-      if (!res.ok) return setError(data.message)
+      if (!res.ok) return setError(friendlyError(data.message))
       setResult(data)
-    } catch {
+    } catch (err) {
+      // Cancelled by user — don't show error
+      if (err.name === 'AbortError') return
       setError('Could not connect to server')
     } finally {
       setLoading(false)
+      abortRef.current = null
+    }
+  }
+
+  const handleCancel = () => {
+    if (abortRef.current) {
+      abortRef.current.abort()
+      setLoading(false)
+      setError('')
     }
   }
 
   const handleAddToLog = () => {
     addFood({
-      name: description.slice(0, 80),   // use description as food name
+      name: description.slice(0, 80),
       calories: result.calories,
       protein: result.protein
     })
@@ -63,19 +81,28 @@ function AiEstimator({ token, addFood }) {
             onChange={e => setDescription(e.target.value)}
             rows={3}
             maxLength={500}
+            disabled={loading}
           />
           <span className="char-count">{description.length}/500</span>
         </div>
 
         {error && <p className="form-error">⚠️ {error}</p>}
 
-        <button type="submit" className="submit-btn" disabled={loading || !description.trim()}>
-          {loading ? (
-            <span className="ai-loading">🤖 Estimating...</span>
-          ) : (
-            '✨ Estimate Calories'
-          )}
-        </button>
+        {loading ? (
+          <div className="ai-loading-row">
+            <div className="ai-loading-indicator">
+              <span className="ai-dot" /><span className="ai-dot" /><span className="ai-dot" />
+              <span className="ai-loading-text">Estimating...</span>
+            </div>
+            <button type="button" className="ai-cancel-btn" onClick={handleCancel}>
+              Cancel
+            </button>
+          </div>
+        ) : (
+          <button type="submit" className="submit-btn" disabled={!description.trim()}>
+            ✨ Estimate Calories
+          </button>
+        )}
       </form>
 
       {/* Result */}
@@ -93,7 +120,6 @@ function AiEstimator({ token, addFood }) {
             </div>
           </div>
 
-          {/* Breakdown */}
           {result.items?.length > 0 && (
             <ul className="ai-breakdown">
               {result.items.map((item, i) => (
@@ -105,13 +131,9 @@ function AiEstimator({ token, addFood }) {
             </ul>
           )}
 
-          {result.note && (
-            <p className="ai-note">💡 {result.note}</p>
-          )}
+          {result.note && <p className="ai-note">💡 {result.note}</p>}
 
-          <p className="ai-disclaimer">
-            ⚠️ AI estimates — accuracy may vary by ±20%
-          </p>
+          <p className="ai-disclaimer">⚠️ AI estimates — accuracy may vary by ±20%</p>
 
           {added ? (
             <p className="ai-added">✅ Added to your food log!</p>
@@ -124,6 +146,19 @@ function AiEstimator({ token, addFood }) {
       )}
     </div>
   )
+}
+
+// Convert raw API/model errors → user-friendly messages
+function friendlyError(msg = '') {
+  if (msg.includes('503') || msg.includes('high demand') || msg.includes('Service Unavailable'))
+    return 'AI is busy right now — please try again in a few seconds.'
+  if (msg.includes('API key') || msg.includes('API_KEY'))
+    return 'AI service is not configured. Contact support.'
+  if (msg.includes('quota') || msg.includes('rate limit') || msg.includes('429'))
+    return 'Too many requests — wait a moment and try again.'
+  if (msg.includes('not a valid food') || msg.includes('Not a valid food'))
+    return 'That doesn\'t look like food — try describing a meal.'
+  return msg || 'Estimation failed — please try again.'
 }
 
 export default AiEstimator
