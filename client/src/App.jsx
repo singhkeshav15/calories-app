@@ -11,35 +11,37 @@ import './App.css'
 
 const API_URL = `${import.meta.env.VITE_API_URL}/api/foods`
 
-// Helper: format Date object → "YYYY-MM-DD"
-const toDateStr = (date) => date.toISOString().split('T')[0]
+// Format Date object → "YYYY-MM-DD" using local time (not UTC)
+const toDateStr = (date) => {
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  const d = String(date.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
+}
 
-// Helper: format "YYYY-MM-DD" → "Sept 15, 2024"
+// Format "YYYY-MM-DD" → "Sep 15, 2024"
 const formatDisplay = (dateStr) => {
-  const date = new Date(dateStr + 'T00:00:00')
+  const [y, m, d] = dateStr.split('-').map(Number)
+  const date = new Date(y, m - 1, d)
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
 function App() {
   const [foods, setFoods] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [initialLoading, setInitialLoading] = useState(true)  // first load only
+  const [dateLoading, setDateLoading] = useState(false)        // date navigation
   const [error, setError] = useState(null)
   const [token, setToken] = useState(localStorage.getItem('token'))
   const [showRegister, setShowRegister] = useState(false)
   const [dailyGoal, setDailyGoal] = useState(null)
   const [showEditGoal, setShowEditGoal] = useState(false)
-  const [refreshKey, setRefreshKey] = useState(0)   // increments to trigger chart re-fetch
+  const [refreshKey, setRefreshKey] = useState(0)
 
-  // Date navigation state — default to today
   const [selectedDate, setSelectedDate] = useState(toDateStr(new Date()))
   const today = toDateStr(new Date())
 
-  // Called after successful login/register
-  const handleLogin = (newToken) => {
-    setToken(newToken)
-  }
+  const handleLogin = (newToken) => setToken(newToken)
 
-  // Logout
   const handleLogout = () => {
     localStorage.removeItem('token')
     setToken(null)
@@ -47,28 +49,29 @@ function App() {
     setDailyGoal(null)
   }
 
-  // Called after onboarding completes
   const handleOnboardingComplete = (goal) => {
     setDailyGoal(goal)
     setShowEditGoal(false)
   }
 
-  // Date navigation handlers
+  // Date navigation
   const goToPrevDay = () => {
-    const d = new Date(selectedDate + 'T00:00:00')
-    d.setDate(d.getDate() - 1)
-    setSelectedDate(toDateStr(d))
+    const [y, m, d] = selectedDate.split('-').map(Number)
+    const date = new Date(y, m - 1, d)
+    date.setDate(date.getDate() - 1)
+    setSelectedDate(toDateStr(date))
   }
 
   const goToNextDay = () => {
-    const d = new Date(selectedDate + 'T00:00:00')
-    d.setDate(d.getDate() + 1)
-    setSelectedDate(toDateStr(d))
+    const [y, m, d] = selectedDate.split('-').map(Number)
+    const date = new Date(y, m - 1, d)
+    date.setDate(date.getDate() + 1)
+    setSelectedDate(toDateStr(date))
   }
 
   const goToToday = () => setSelectedDate(today)
 
-  // Fetch user profile (runs once on login)
+  // Fetch profile once on login
   useEffect(() => {
     if (!token) return
     const fetchProfile = async () => {
@@ -86,12 +89,16 @@ function App() {
     fetchProfile()
   }, [token])
 
-  // Fetch foods whenever token OR selectedDate changes
+  // Fetch foods on token change (initial) or date change (navigation)
   useEffect(() => {
     if (!token) return
+
+    const isInitial = initialLoading
+    if (isInitial) setInitialLoading(true)
+    else setDateLoading(true)
+
     const fetchFoods = async () => {
       try {
-        setLoading(true)
         const response = await fetch(`${API_URL}?date=${selectedDate}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         })
@@ -101,13 +108,14 @@ function App() {
       } catch {
         setError('Could not load foods. Is the server running?')
       } finally {
-        setLoading(false)
+        setInitialLoading(false)
+        setDateLoading(false)
       }
     }
+
     fetchFoods()
   }, [token, selectedDate])
 
-  // Add food — include selectedDate
   const addFood = async (newFood) => {
     const response = await fetch(API_URL, {
       method: 'POST',
@@ -118,28 +126,27 @@ function App() {
       body: JSON.stringify({ ...newFood, logged_date: selectedDate })
     })
     const data = await response.json()
-    setFoods((prevFoods) => [...prevFoods, data])
-    setRefreshKey(k => k + 1)   // trigger chart refresh
+    setFoods(prev => [...prev, data])
+    setRefreshKey(k => k + 1)
   }
 
-  // Delete food
   const deleteFood = async (id) => {
     await fetch(`${API_URL}/${id}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     })
-    setFoods(foods.filter((food) => food.id !== id))
-    setRefreshKey(k => k + 1)   // trigger chart refresh
+    setFoods(prev => prev.filter(f => f.id !== id))
+    setRefreshKey(k => k + 1)
   }
 
-  // Show login/register if not authenticated
+  // Auth gates
   if (!token) {
     return showRegister
       ? <Register onLogin={handleLogin} switchToLogin={() => setShowRegister(false)} />
       : <Login onLogin={handleLogin} switchToRegister={() => setShowRegister(true)} />
   }
 
-  if (loading) return (
+  if (initialLoading) return (
     <div className="app">
       <div className="status-screen">
         <div className="spinner" />
@@ -157,7 +164,6 @@ function App() {
     </div>
   )
 
-  // Show onboarding if no goal set yet, or user clicked "Edit Goal"
   if (!dailyGoal || showEditGoal) {
     return <Onboarding token={token} onComplete={handleOnboardingComplete} />
   }
@@ -176,7 +182,6 @@ function App() {
             <button onClick={handleLogout} className="logout-btn">Logout</button>
           </div>
         </div>
-        <p className="app-subtitle">Track your daily nutrition</p>
       </header>
 
       {/* Date Navigation */}
@@ -184,7 +189,7 @@ function App() {
         <button className="date-nav-btn" onClick={goToPrevDay}>←</button>
         <div className="date-nav-center">
           <span className="date-nav-label">
-            {isToday ? '📅 Today' : formatDisplay(selectedDate)}
+            {isToday ? '📅 Today' : `📅 ${formatDisplay(selectedDate)}`}
           </span>
           {!isToday && (
             <button className="date-today-btn" onClick={goToToday}>Back to Today</button>
@@ -194,9 +199,11 @@ function App() {
           className="date-nav-btn"
           onClick={goToNextDay}
           disabled={isToday}
-          style={{ opacity: isToday ? 0.3 : 1 }}
         >→</button>
       </div>
+
+      {/* Inline loading bar when navigating dates */}
+      {dateLoading && <div className="date-loading-bar" />}
 
       <Dashboard foods={foods} dailyGoal={dailyGoal} />
 
@@ -206,7 +213,7 @@ function App() {
 
       <div className="bottom-section">
         <AddFoodForm addFood={addFood} />
-        <FoodList foods={foods} deleteFood={deleteFood} />
+        <FoodList foods={foods} deleteFood={deleteFood} isToday={isToday} selectedDate={selectedDate} />
       </div>
     </div>
   )
